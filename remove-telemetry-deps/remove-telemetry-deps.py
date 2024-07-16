@@ -17,16 +17,16 @@ with open(package_file, 'r') as f:
 with open(lock_file, 'r') as f:
     lock = json.load(f)
 
-del(package['dependencies']['amplitude-js'])
-del(package['dependencies']['@sentry/browser'])
-del(package['dependencies']['@sentry/cli'])
+# del(package['dependencies']['amplitude-js'])
+# del(package['dependencies']['@sentry/browser'])
+# del(package['dependencies']['@sentry/cli'])
 
-del(lock['packages']['']['dependencies']['amplitude-js'])
-del(lock['packages']['']['dependencies']['@sentry/browser'])
-del(lock['packages']['']['dependencies']['@sentry/cli'])
-del(lock['packages']['node_modules/amplitude-js'])
-del(lock['packages']['node_modules/@sentry/browser'])
-del(lock['packages']['node_modules/@sentry/cli'])
+# del(lock['packages']['']['dependencies']['amplitude-js'])
+# del(lock['packages']['']['dependencies']['@sentry/browser'])
+# del(lock['packages']['']['dependencies']['@sentry/cli'])
+# del(lock['packages']['node_modules/amplitude-js'])
+# del(lock['packages']['node_modules/@sentry/browser'])
+# del(lock['packages']['node_modules/@sentry/cli'])
 
 with open(package_file, 'w') as f:
     json.dump(package, f, indent='\t')

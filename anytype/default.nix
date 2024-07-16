@@ -1,7 +1,7 @@
 { anytype-ts-src, anytype-l10n-src, anytype-heart, anytype-protos-js, fix-lockfile
 , remove-telemetry-deps
 , lib, fetchFromGitHub, fetchurl, makeWrapper, buildNpmPackage, fetchNpmDeps
-, pkg-config, libsecret, electron_30, libglvnd, jq, moreutils, stdenvNoCC }:
+, pkg-config, libsecret, electron_30, libglvnd, jq, moreutils, stdenvNoCC, bash }:
 
 let
 
@@ -47,8 +47,9 @@ npmDepsHash: buildNpmPackage {
   inherit npmDepsHash;
 
   patches = [
-    ./0001-remove-analytics.patch
+    # ./0001-remove-analytics.patch
     ./0002-fix-server-path.patch
+    ./0003.patch
   ];
 
   postPatch = ''
@@ -95,6 +96,12 @@ npmDepsHash: buildNpmPackage {
       mkdir -p $out/share/icons/hicolor/$size/apps
       mv electron/img/icons/$size.png $out/share/icons/hicolor/$size/apps/anytype.png
     done
+    mv $out/bin/anytype $out/bin/.anytype-unwrapped
+    cat > $out/bin/anytype << EOF
+    #! ${lib.getExe bash} -e
+    exec firejail --profile=${./anytype.profile} -- $out/bin/.anytype-unwrapped "\$@"
+    EOF
+    chmod +x $out/bin/anytype
   '';
 
   meta = with lib; {
