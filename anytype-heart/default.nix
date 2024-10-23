@@ -1,4 +1,4 @@
-{ src, lib, fetchFromGitHub, buildGoModule, anytype-heart-src }:
+{ src, lib, fetchFromGitHub, buildGoModule, anytype-heart-src, tantivy-go }:
 
 let
 
@@ -20,6 +20,8 @@ let
     doCheck = false;
 
     patches = [ ./0001-remove-amplitude-analytics.patch ];
+
+    CGO_LDFLAGS = "-L${tantivy-go}/lib";
 
     meta = with lib; {
       description = "Shared library for Anytype clients ";

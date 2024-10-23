@@ -37,7 +37,7 @@
       };
       anytype-heart-src = callPackage ./anytype-heart/src.nix { };
       anytype-heart = callPackage ./anytype-heart {
-        inherit anytype-heart-src;
+        inherit anytype-heart-src tantivy-go;
       };
       anytype-protos-js = callPackage ./anytype-protos-js {
         inherit anytype-heart-src protoc-gen-js;
