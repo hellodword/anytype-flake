@@ -61,7 +61,7 @@
 
       };
       checks = flake-utils.lib.flattenTree {
-        inherit (packages) anytype-test anytype-flake-update;
+        inherit (packages) anytype-test;
       };
       apps.default = {
         type = "app";
