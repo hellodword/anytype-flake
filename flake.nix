@@ -31,6 +31,10 @@
       fix-lockfile = callPackage ./fix-lockfile {};
       remove-telemetry-deps = callPackage ./remove-telemetry-deps {};
       anytype-ts-src = callPackage ./anytype/src.nix { };
+      tantivy-go-src = callPackage ./tantivy-go/src.nix { };
+      tantivy-go = callPackage ./tantivy-go {
+        inherit tantivy-go-src;
+      };
       anytype-heart-src = callPackage ./anytype-heart/src.nix { };
       anytype-heart = callPackage ./anytype-heart {
         inherit anytype-heart-src;
@@ -47,7 +51,7 @@
     rec {
       packages = flake-utils.lib.flattenTree {
 
-        inherit anytype anytype-heart anytype-protos-js fix-lockfile remove-telemetry-deps protoc-gen-js;
+        inherit anytype anytype-heart anytype-protos-js fix-lockfile remove-telemetry-deps protoc-gen-js tantivy-go;
 
         default = anytype;
 
