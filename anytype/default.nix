@@ -23,7 +23,7 @@ let
     installPhase = ''
       mkdir $out
       cp -r . $out
-      ${remove-telemetry-deps}/bin/remove-telemetry-deps.py $out
+      # ${remove-telemetry-deps}/bin/remove-telemetry-deps.py $out
       # this connects to the internet and fetches missing hashes
       ${fix-lockfile}/bin/fix-lockfile.py $out/package-lock.json $out/package-lock.json
     '';
@@ -47,7 +47,7 @@ npmDepsHash: buildNpmPackage {
   inherit npmDepsHash;
 
   patches = [
-    ./0001-remove-analytics.patch
+    # ./0001-remove-analytics.patch
     ./0002-fix-server-path.patch
   ];
 

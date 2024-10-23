@@ -19,7 +19,7 @@ let
 
     doCheck = false;
 
-    patches = [ ./0001-remove-amplitude-analytics.patch ];
+    # patches = [ ./0001-remove-amplitude-analytics.patch ];
 
     CGO_LDFLAGS = "-L${tantivy-go}/lib";
 
