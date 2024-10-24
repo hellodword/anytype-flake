@@ -1,35 +1,44 @@
-{ src, lib, fetchFromGitHub, buildGoModule, anytype-heart-src, tantivy-go }:
+{
+  src,
+  lib,
+  fetchFromGitHub,
+  buildGoModule,
+  anytype-heart-src,
+  tantivy-go,
+}:
 
 let
 
   vendorHash = builtins.fromJSON (builtins.readFile ./vendorHash.json);
 
-  pkg = vendorHash: buildGoModule {
+  pkg =
+    vendorHash:
+    buildGoModule {
 
-    name = "anytype-heart-${anytype-heart-src.version}";
+      name = "anytype-heart-${anytype-heart-src.version}";
 
-    inherit vendorHash;
+      inherit vendorHash;
 
-    inherit (anytype-heart-src) src version;
+      inherit (anytype-heart-src) src version;
 
-    CGO_CFLAGS = [ "-Wno-format-security" ];
+      CGO_CFLAGS = [ "-Wno-format-security" ];
 
-    # the C files in the dependencies get lost without this
-    proxyVendor = true;
+      # the C files in the dependencies get lost without this
+      proxyVendor = true;
 
-    doCheck = false;
+      doCheck = false;
 
-    # patches = [ ./0001-remove-amplitude-analytics.patch ];
+      # patches = [ ./0001-remove-amplitude-analytics.patch ];
 
-    CGO_LDFLAGS = "-L${tantivy-go}/lib";
+      CGO_LDFLAGS = "-L${tantivy-go}/lib";
 
-    meta = with lib; {
-      description = "Shared library for Anytype clients ";
-      homepage = "https://github.com/anyproto/anytype-heart";
-      license = licenses.unfree;
-      platforms = platforms.linux;
+      meta = with lib; {
+        description = "Shared library for Anytype clients ";
+        homepage = "https://github.com/anyproto/anytype-heart";
+        license = licenses.unfree;
+        platforms = platforms.linux;
+      };
     };
-  };
 
 in
 

@@ -1,5 +1,10 @@
-{ callPackage, lib, makeWrapper, nix-prefetch-github }:
-(callPackage ./unwrapped.nix {}).overrideAttrs (old: {
+{
+  callPackage,
+  lib,
+  makeWrapper,
+  nix-prefetch-github,
+}:
+(callPackage ./unwrapped.nix { }).overrideAttrs (old: {
   nativeBuildInputs = [ makeWrapper ];
   postInstall = ''
     wrapProgram $out/bin/anytype-flake-update \

@@ -1,14 +1,19 @@
-{ lib
-, stdenvNoCC
-, anytype-heart-src
-, protoc-gen-js
-, protoc-gen-grpc-web
-, protobuf
+{
+  lib,
+  stdenvNoCC,
+  anytype-heart-src,
+  protoc-gen-js,
+  protoc-gen-grpc-web,
+  protobuf,
 }:
 stdenvNoCC.mkDerivation {
   name = "anytype-protos-js-${anytype-heart-src.version}";
   inherit (anytype-heart-src) src version;
-  nativeBuildInputs = [ protoc-gen-grpc-web protoc-gen-js protobuf ];
+  nativeBuildInputs = [
+    protoc-gen-grpc-web
+    protoc-gen-js
+    protobuf
+  ];
   makeFlags = "protos-js";
   installPhase = ''
     mkdir -p $out/{protobuf,json}
@@ -18,10 +23,10 @@ stdenvNoCC.mkDerivation {
     cp pkg/lib/bundle/internal*.json $out/json
   '';
 
-   meta = with lib; {
-     description = "Generated Anytype protobuf code";
-     homepage = "https://github.com/anyproto/anytype-heart";
-     license = licenses.unfree;
-     platforms = platforms.linux;
-   };
+  meta = with lib; {
+    description = "Generated Anytype protobuf code";
+    homepage = "https://github.com/anyproto/anytype-heart";
+    license = licenses.unfree;
+    platforms = platforms.linux;
+  };
 }

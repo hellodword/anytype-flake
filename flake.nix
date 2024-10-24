@@ -15,68 +15,89 @@
     };
   };
 
-  outputs = inputs@{ self, nixpkgs, flake-utils, anytype-l10n, ... }:
-  flake-utils.lib.eachDefaultSystem (system:
+  outputs =
+    inputs@{
+      self,
+      nixpkgs,
+      flake-utils,
+      anytype-l10n,
+      ...
+    }:
+    flake-utils.lib.eachDefaultSystem (
+      system:
 
-    let
-      pkgs = import nixpkgs {
-        inherit system;
-        config.allowUnfree = true;
-      };
-    in
+      let
+        pkgs = import nixpkgs {
+          inherit system;
+          config.allowUnfree = true;
+        };
+      in
 
-    with pkgs;
+      with pkgs;
 
-    let
-      fix-lockfile = callPackage ./fix-lockfile {};
-      remove-telemetry-deps = callPackage ./remove-telemetry-deps {};
-      anytype-ts-src = callPackage ./anytype/src.nix { };
-      tantivy-go-src = callPackage ./tantivy-go/src.nix { };
-      tantivy-go = callPackage ./tantivy-go {
-        inherit tantivy-go-src;
-      };
-      anytype-heart-src = callPackage ./anytype-heart/src.nix { };
-      anytype-heart = callPackage ./anytype-heart {
-        inherit anytype-heart-src tantivy-go;
-      };
-      anytype-protos-js = callPackage ./anytype-protos-js {
-        inherit anytype-heart-src protoc-gen-js;
-      };
-      anytype = callPackage ./anytype {
-        inherit anytype-ts-src anytype-heart anytype-protos-js fix-lockfile remove-telemetry-deps;
-        anytype-l10n-src = anytype-l10n;
-      };
-    in
+      let
+        fix-lockfile = callPackage ./fix-lockfile { };
+        remove-telemetry-deps = callPackage ./remove-telemetry-deps { };
+        anytype-ts-src = callPackage ./anytype/src.nix { };
+        tantivy-go-src = callPackage ./tantivy-go/src.nix { };
+        tantivy-go = callPackage ./tantivy-go {
+          inherit tantivy-go-src;
+        };
+        anytype-heart-src = callPackage ./anytype-heart/src.nix { };
+        anytype-heart = callPackage ./anytype-heart {
+          inherit anytype-heart-src tantivy-go;
+        };
+        anytype-protos-js = callPackage ./anytype-protos-js {
+          inherit anytype-heart-src protoc-gen-js;
+        };
+        anytype = callPackage ./anytype {
+          inherit
+            anytype-ts-src
+            anytype-heart
+            anytype-protos-js
+            fix-lockfile
+            remove-telemetry-deps
+            ;
+          anytype-l10n-src = anytype-l10n;
+        };
+      in
 
-    rec {
-      packages = flake-utils.lib.flattenTree {
+      rec {
+        packages = flake-utils.lib.flattenTree {
 
-        inherit anytype anytype-heart anytype-protos-js fix-lockfile remove-telemetry-deps protoc-gen-js tantivy-go;
+          inherit
+            anytype
+            anytype-heart
+            anytype-protos-js
+            fix-lockfile
+            remove-telemetry-deps
+            protoc-gen-js
+            tantivy-go
+            ;
 
-        default = anytype;
+          default = anytype;
 
-        anytype-test = nixosTest (import ./anytype/test.nix { inherit self; });
+          anytype-test = nixosTest (import ./anytype/test.nix { inherit self; });
 
-        anytype-flake-update = haskellPackages.callPackage ./update {};
+          anytype-flake-update = haskellPackages.callPackage ./update { };
 
-      };
-      checks = flake-utils.lib.flattenTree {
-        inherit (packages) anytype-test;
-      };
-      apps.default = {
-        type = "app";
-        program = "${self.packages.${system}.default}/bin/anytype";
-      };
+        };
+        checks = flake-utils.lib.flattenTree {
+          inherit (packages) anytype-test;
+        };
+        apps.default = {
+          type = "app";
+          program = "${self.packages.${system}.default}/bin/anytype";
+        };
 
-      devShells.default =
-      mkShell {
-        name = "package-update";
-        inputsFrom = [
-          packages.anytype-flake-update.env
-        ];
-        nativeBuildInputs = [
-          haskell-language-server
-          (pkgs.stdenv.mkDerivation {
+        devShells.default = mkShell {
+          name = "package-update";
+          inputsFrom = [
+            packages.anytype-flake-update.env
+          ];
+          nativeBuildInputs = [
+            haskell-language-server
+            (pkgs.stdenv.mkDerivation {
               name = "hls-link";
               dontUnpack = true;
               dontBuild = true;
@@ -84,15 +105,15 @@
                 mkdir -p $out/bin
                 ln -s ${haskell-language-server}/bin/haskell-language-server-wrapper $out/bin/haskell-language-server
               '';
-           })
-          cabal-install
-          cabal2nix
-          haskellPackages.fourmolu
-          nix-prefetch-github
-          nodejs
-          prefetch-npm-deps
-        ];
-      };
-    }
-  );
+            })
+            cabal-install
+            cabal2nix
+            haskellPackages.fourmolu
+            nix-prefetch-github
+            nodejs
+            prefetch-npm-deps
+          ];
+        };
+      }
+    );
 }
