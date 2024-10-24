@@ -1,5 +1,5 @@
 { self }:
-{ pkgs, config, ... }:
+{ pkgs, ... }:
 {
   name = "anytype-execute-test";
   nodes.machine = {

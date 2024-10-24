@@ -1,8 +1,4 @@
-{
-  lib,
-  stdenvNoCC,
-  python3,
-}:
+{ stdenvNoCC, python3 }:
 
 stdenvNoCC.mkDerivation {
   name = "remove-telemetry-deps";

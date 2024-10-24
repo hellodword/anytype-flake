@@ -6,17 +6,11 @@
   fix-lockfile,
   remove-telemetry-deps,
   lib,
-  fetchFromGitHub,
-  fetchurl,
-  makeWrapper,
   buildNpmPackage,
-  fetchNpmDeps,
   pkg-config,
   libsecret,
   electron_31,
   libglvnd,
-  jq,
-  moreutils,
   stdenvNoCC,
 }:
 
@@ -25,8 +19,6 @@ let
   electron = electron_31;
 
   pname = "anytype";
-
-  version = anytype-ts-src.version;
 
   npmDepsHash = builtins.fromJSON (builtins.readFile ./deps.json);
 

@@ -1,7 +1,5 @@
 {
-  src,
   lib,
-  fetchFromGitHub,
   buildGoModule,
   anytype-heart-src,
   tantivy-go,

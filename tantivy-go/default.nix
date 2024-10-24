@@ -1,10 +1,11 @@
-{ lib
-, tantivy-go-src
-, stdenvNoCC
-, rustPlatform
-, rust-cbindgen
-, cargo
-, cacert
+{
+  lib,
+  tantivy-go-src,
+  stdenvNoCC,
+  rustPlatform,
+  rust-cbindgen,
+  cargo,
+  cacert,
 }:
 
 let
@@ -13,71 +14,74 @@ let
 
   srcPatchedHash = builtins.fromJSON (builtins.readFile ./src-patched.json);
 
-  mkSrcPatched = hash: stdenvNoCC.mkDerivation {
-    name = "tantivy-go-src-patched-${tantivy-go-src.version}";
-    inherit (tantivy-go-src) src version;
-    dontBuild = true;
-    dontFixup = true;
-    installPhase = ''
-      cd rust
-      cargo generate-lockfile
-      mkdir $out
-      cp -r . $out
-    '';
-    outputHash = hash;
-    outputHashMode = "recursive";
-    nativeBuildInputs = [
-      cacert
-      cargo
-    ];
-  };
+  mkSrcPatched =
+    hash:
+    stdenvNoCC.mkDerivation {
+      name = "tantivy-go-src-patched-${tantivy-go-src.version}";
+      inherit (tantivy-go-src) src version;
+      dontBuild = true;
+      dontFixup = true;
+      installPhase = ''
+        cd rust
+        cargo generate-lockfile
+        mkdir $out
+        cp -r . $out
+      '';
+      outputHash = hash;
+      outputHashMode = "recursive";
+      nativeBuildInputs = [
+        cacert
+        cargo
+      ];
+    };
 
   srcPatched = mkSrcPatched srcPatchedHash;
 
-  pkg = cargoHash: rustPlatform.buildRustPackage rec {
+  pkg =
+    cargoHash:
+    rustPlatform.buildRustPackage {
 
-    name = "tantivy-go-${srcPatched.version}";
+      name = "tantivy-go-${srcPatched.version}";
 
-    inherit cargoHash;
+      inherit cargoHash;
 
-    inherit (tantivy-go-src) version;
+      inherit (tantivy-go-src) version;
 
-    src = srcPatched;
+      src = srcPatched;
 
-    nativeBuildInputs = [
-      rust-cbindgen
-    ];
+      nativeBuildInputs = [
+        rust-cbindgen
+      ];
 
-    preBuild = ''
-      mkdir -p $out/include
-      sed -i "s@\"../bindings.h\"@\"$out/include/bindings.h\"@" src/build.rs
-    '';
+      preBuild = ''
+        mkdir -p $out/include
+        sed -i "s@\"../bindings.h\"@\"$out/include/bindings.h\"@" src/build.rs
+      '';
 
-    buildPhase = ''
-      runHook preBuild
+      buildPhase = ''
+        runHook preBuild
 
-      cargo build --release
+        cargo build --release
 
-      runHook postBuild
-    '';
+        runHook postBuild
+      '';
 
-    installPhase = ''
-      runHook preInstall
+      installPhase = ''
+        runHook preInstall
 
-      mkdir -p $out/lib
-      cp -r target/release/libtantivy_go.a "$out/lib"
+        mkdir -p $out/lib
+        cp -r target/release/libtantivy_go.a "$out/lib"
 
-      runHook postInstall
-    '';
+        runHook postInstall
+      '';
 
-
-    meta = with lib; {
-      description = "Tantivy go bindings ";
-      homepage = "https://github.com/anyproto/tantivy-go";
-      license = licenses.mit;
-      platforms = platforms.linux;
+      meta = with lib; {
+        description = "Tantivy go bindings ";
+        homepage = "https://github.com/anyproto/tantivy-go";
+        license = licenses.mit;
+        platforms = platforms.linux;
+      };
     };
-  };
 
 in
 

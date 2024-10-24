@@ -1,5 +1,4 @@
 {
-  lib,
   makeWrapper,
   stdenvNoCC,
   python3,
