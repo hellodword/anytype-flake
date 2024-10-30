@@ -1,57 +1,38 @@
 {
   lib,
   tantivy-go-src,
-  stdenvNoCC,
   rustPlatform,
   rust-cbindgen,
-  cargo,
-  cacert,
 }:
 
 let
 
-  cargoHash = builtins.fromJSON (builtins.readFile ./cargoHash.json);
-
-  srcPatchedHash = builtins.fromJSON (builtins.readFile ./src-patched.json);
-
-  mkSrcPatched =
-    hash:
-    stdenvNoCC.mkDerivation {
-      name = "tantivy-go-src-patched-${tantivy-go-src.version}";
-      inherit (tantivy-go-src) src version;
-      dontBuild = true;
-      dontFixup = true;
-      installPhase = ''
-        cd rust
-        cargo generate-lockfile
-        mkdir $out
-        cp -r . $out
-      '';
-      outputHash = hash;
-      outputHashMode = "recursive";
-      nativeBuildInputs = [
-        cacert
-        cargo
-      ];
-    };
-
-  srcPatched = mkSrcPatched srcPatchedHash;
+  cargoHash = lib.fakeHash;
 
   pkg =
     cargoHash:
     rustPlatform.buildRustPackage {
 
-      name = "tantivy-go-${srcPatched.version}";
+      name = "tantivy-go-${tantivy-go-src.version}";
 
       inherit cargoHash;
 
       inherit (tantivy-go-src) version;
 
-      src = srcPatched;
+      src = tantivy-go-src.src;
 
       nativeBuildInputs = [
         rust-cbindgen
       ];
+
+      sourceRoot = "${tantivy-go-src.src.name}/rust";
+
+      cargoLock = {
+        lockFile = ./Cargo.lock;
+      };
+      postPatch = ''
+        ln -s ${./Cargo.lock} Cargo.lock
+      '';
 
       preBuild = ''
         mkdir -p $out/include
@@ -87,7 +68,6 @@ in
 
 (pkg cargoHash).overrideAttrs (old: {
   passthru = {
-    srcPatchedUpdate = mkSrcPatched lib.fakeHash;
     cargoHashUpdate = pkg lib.fakeHash;
   };
 })
