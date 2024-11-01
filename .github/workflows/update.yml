@@ -1,0 +1,57 @@
+name: update
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "30 0,12 * * *"
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: anytype-flake-update
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: config git
+        run: |
+          git config --global user.name github-actions[bot]
+          git config --global user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git fetch --all
+
+      - name: install nix
+        run: |
+          yes | sh <(curl -L https://nixos.org/nix/install) --no-daemon
+          mkdir -p ~/.config/nix
+          echo 'system-features = nixos-test benchmark big-parallel kvm' >> ~/.config/nix/nix.conf
+          echo 'experimental-features = nix-command flakes' >> ~/.config/nix/nix.conf
+          set +x
+          echo "access-tokens = github.com=$GITHUB_ACCESS_TOKEN" >> ~/.config/nix/nix.conf
+        env:
+          GITHUB_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: update
+        run: |
+          . ~/.nix-profile/etc/profile.d/nix.sh
+
+          commit_current="$(git rev-parse HEAD)"
+
+          ./scripts/update-latest.sh
+
+          commit_new="$(git rev-parse HEAD)"
+
+          if [ "$commit_current" != "$commit_new" ]; then
+            git checkout -b "automated/${commit_current}_to_${commit_new}"
+            git push -f origin "automated/${commit_current}_to_${commit_new}"
+            gh pr create --fill
+          fi
+
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
