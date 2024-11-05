@@ -74,3 +74,9 @@ do
     echo updating "$pkg"
     update "$pkg" "$repo" "$base"
 done
+
+nix flake update
+git add flake.lock
+if git commit -m 'chore: flake update'; then
+    nix flake check -L
+fi
