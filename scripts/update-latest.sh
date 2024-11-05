@@ -30,7 +30,13 @@ update() {
     base="$3"
 
     version_current="$(jq -r '.rev' "$base/src.json")"
-    version_latest="$(curl -fsS -w "%{redirect_url}" -o /dev/null "https://github.com/$repo/releases/latest" | grep -oP '(?<=/releases/tag/)[^/]+$')"
+    # exclude alpha/beta and prerelease
+    version_latest="$(curl -fsSL \
+        -H "Accept: application/vnd.github+json" \
+        -H "X-GitHub-Api-Version: 2022-11-28" \
+        -H "Authorization: Bearer $GITHUB_TOKEN" \
+        "https://api.github.com/repos/$repo/releases" | \
+            jq -r 'first( .[] | select(.name | contains("beta") | not) | select(.name | contains("alpha") | not) | select(.prerelease | not) ) | .name')"
 
     if [ -z "$version_current" ]; then
         echo "no version_current"
@@ -40,8 +46,8 @@ update() {
         echo "no version_latest"
         exit 1
     fi
+    echo "$pkg $version_current -> $version_latest"
     if [ "$version_current" != "$version_latest" ]; then
-        echo "$pkg $version_current -> $version_latest"
         echo "$(jq ".rev = \"$version_latest\"" "$base/src.json")" > "$base/src.json"
         echo "$(jq ".version = \"$version_latest\"" "$base/src.json")" > "$base/src.json"
         # echo "$(jq ".hash = \"sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=\"" "$base/src.json")" > "$base/src.json"
