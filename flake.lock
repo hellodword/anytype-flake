@@ -3,11 +3,11 @@
     "anytype-l10n": {
       "flake": false,
       "locked": {
-        "lastModified": 1730971391,
-        "narHash": "sha256-UMxcB4L1PmXZFa8Pm6Rh5ZZJhaS69c6d/xjqqyCNryQ=",
+        "lastModified": 1731014473,
+        "narHash": "sha256-GY7DOn/R03LWVIvUhy93rwcN3AjsY9yv4BiFMZ44Mig=",
         "owner": "anyproto",
         "repo": "l10n-anytype-ts",
-        "rev": "76aa38d4789443236dc0f56952c16701e964f487",
+        "rev": "62702bb4173b0b016cab4264d30f9b6a404d1a0a",
         "type": "github"
       },
       "original": {
