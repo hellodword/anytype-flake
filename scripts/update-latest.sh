@@ -75,8 +75,12 @@ do
     update "$pkg" "$repo" "$base"
 done
 
-nix flake update
-git add flake.lock
-if git commit -m 'chore: flake update'; then
-    nix flake check -L
-fi
+inputs=( $(nix flake metadata --json | jq -r '.locks | .nodes[.root].inputs | keys[]' | grep -v flake-utils | grep -v systems) )
+for input in "${inputs[@]}"
+do
+    nix flake update "$input"
+    git add flake.lock
+    if git commit -m "chore: flake update ($input)"; then
+        nix flake check -L
+    fi
+done
