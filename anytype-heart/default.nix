@@ -30,6 +30,8 @@ let
 
       CGO_LDFLAGS = "-L${tantivy-go}/lib";
 
+      GOEXPERIMENT = "rangefunc";
+
       meta = with lib; {
         description = "Shared library for Anytype clients ";
         homepage = "https://github.com/anyproto/anytype-heart";
