@@ -58,12 +58,14 @@ update() {
     fi
 }
 
-# <pkg>/<github repo>/<base dir>
+# <pkg>;<github repo>;<base dir>
 items=(
     "tantivy-go;anyproto/tantivy-go;tantivy-go"
     "anytype-heart;anyproto/anytype-heart;anytype-heart"
     "anytype;anyproto/anytype-ts;anytype"
 )
+
+commit_current="$(git rev-parse HEAD)"
 
 for item in "${items[@]}"
 do
@@ -79,6 +81,11 @@ nix flake update nixpkgs
 git add flake.lock
 if git commit -m "chore: flake update nixpkgs"; then
     nix flake check -L
+fi
+
+commit_new="$(git rev-parse HEAD)"
+
+if [ "$commit_current" != "$commit_new" ]; then
     inputs=( $(nix flake metadata --json | jq -r '.locks | .nodes[.root].inputs | keys[]') )
     for input in "${inputs[@]}"
     do
