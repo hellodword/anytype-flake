@@ -77,6 +77,11 @@ do
     update "$pkg" "$repo" "$base"
 done
 
+commit_new="$(git rev-parse HEAD)"
+if [ "$commit_current" != "$commit_new" ]; then
+    nix flake check -L
+fi
+
 nix flake update nixpkgs
 git add flake.lock
 if git commit -m "chore: flake update nixpkgs"; then
