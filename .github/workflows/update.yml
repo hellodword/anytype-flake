@@ -50,8 +50,9 @@ jobs:
           if [ "$commit_current" != "$commit_new" ]; then
             git checkout -b "automated/${commit_current}_to_${commit_new}"
             git push -f origin "automated/${commit_current}_to_${commit_new}"
-            gh pr create --fill
-            gh pr merge --auto --rebase --delete-branch --match-head-commit "$commit_new"
+            PR_URL="$(gh pr create --fill)"
+            echo gh pr merge "$PR_URL" --delete-branch --rebase
+            gh pr merge "$PR_URL" --delete-branch --rebase
           fi
 
         env:
