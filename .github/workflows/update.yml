@@ -51,8 +51,8 @@ jobs:
             git checkout -b "automated/${commit_current}_to_${commit_new}"
             git push -f origin "automated/${commit_current}_to_${commit_new}"
             PR_URL="$(gh pr create -B full -H "automated/${commit_current}_to_${commit_new}" --fill)"
-            echo gh pr merge "$PR_URL" --delete-branch --rebase
-            gh pr merge "$PR_URL" --delete-branch --rebase
+            echo gh pr merge "$PR_URL" --delete-branch --squash
+            gh pr merge "$PR_URL" --delete-branch --squash
           fi
 
         env:
