@@ -9,14 +9,14 @@
   buildNpmPackage,
   pkg-config,
   libsecret,
-  electron_31,
+  electron_33,
   libglvnd,
   stdenvNoCC,
 }:
 
 let
 
-  electron = electron_31;
+  electron = electron_33;
 
   pname = "anytype";
 
