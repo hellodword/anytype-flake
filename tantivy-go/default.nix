@@ -29,6 +29,11 @@ let
 
       cargoLock = {
         lockFile = ./Cargo.lock;
+        outputHashes = {
+          "ownedbytes-0.7.0" = "sha256-e2ffM2gRC5eww3xv9izLqukGUgduCt2u7jsqTDX5l8k=";
+          "rust-stemmers-1.2.0" = "sha256-GJYFQf025U42rJEoI9eIi3xDdK6enptAr3jphuKJdiw=";
+          "tantivy-jieba-0.11.0" = "sha256-BDz6+EVksgLkOj/8XXxPMVshI0X1+oLt6alDLMpnLZc=";
+        };
       };
       postPatch = ''
         ln -s ${./Cargo.lock} Cargo.lock
